@@ -1,2 +1,3 @@
 # RAYD
-RSS Automatic YT-DLP Downloader
+
+RSS Automatic Youtube Downloader

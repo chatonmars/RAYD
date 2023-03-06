@@ -1,8 +1,15 @@
-import sqlite3
 import requests
 from bs4 import BeautifulSoup
+from yt_dlp import YoutubeDL
 
-db_connection = sqlite3.connect('history.db')
+ydl_opts_default = {
+    'download_archive': './yt_dlp_archive',
+    'outtmpl': '%(title)s.%(ext)s',
+    'paths': {
+        'home': '~\\Youtube'
+    }
+}
+
 feed_file = open('rss.txt', 'r', encoding='utf8')
 for _, line in enumerate(feed_file):
     request_response = requests.get(line, timeout=60)
@@ -13,20 +20,17 @@ for _, line in enumerate(feed_file):
     if uploader is None:
         break
     uploader_name = uploader.get_text()
+    ydl_opts = {
+        'download_archive': ydl_opts_default['download_archive'],
+        'outtmpl': ydl_opts_default['outtmpl'],
+        'paths': {
+            'home': ydl_opts_default['paths']['home'] + '\\' + uploader_name
+        }
+    }
 
     for video in xml_tree.find_all('entry'):
-        video_id_tag = video.find('yt:videoId')
-        video_id = video_id_tag.get_text()
-        cursor = db_connection.execute(
-            'SELECT * FROM "DOWNLOADED-VIDEOS" WHERE "ID"=?', [video_id])
-        if cursor.fetchone() is not None:
-            break
-
         video_link = video.link.get('href')
-        # Download command
-        db_connection.execute(
-            'INSERT INTO "DOWNLOADED-VIDEOS" VALUES (?)', [video_id])
-        db_connection.commit()
+        with YoutubeDL(ydl_opts) as yt_dl:
+            yt_dl.download([video_link])
 
 feed_file.close()
-db_connection.close()

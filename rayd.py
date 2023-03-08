@@ -1,7 +1,27 @@
 import logging
+import argparse
+import os
+
 import requests
 from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
+
+
+parser = argparse.ArgumentParser(
+    prog='RAYD - RSS Automatic Youtube Downloader',
+    description='Download automatically new videos from Youtube using RSS feeds')
+parser.add_argument(
+    '-f',
+    '--download_folder',
+    default='~/RAYD_Downloads',
+    type=str,
+    help='Path to the folder where videos will be downloaded')
+args = parser.parse_args()
+
+if not os.path.exists(args.download_folder):
+    print('Download folder\'s path not viable')
+    exit()
+
 
 logging.basicConfig(
     filename='rayd.log',
@@ -15,7 +35,7 @@ ydl_opts_default = {
     'download_archive': './yt_dlp_archive',
     'outtmpl': '%(title)s.%(ext)s',
     'paths': {
-        'home': '~/Youtube'
+        'home': args.download_folder
     },
     'windowsfilename': True,
     'ignoreerrors': True,
@@ -73,3 +93,4 @@ for line in feed_file:
 feed_file.close()
 
 logging.info('Script ended')
+logging.shutdown()

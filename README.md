@@ -8,7 +8,7 @@ A Python script to download latest videos from Youtube channels
 
 ## Installation
 
-- Download the script
+- Download the script, rss feed file and playlist url file [here](https://github.com/chatonmars/RAYD/releases/latest)
 - Install Python and pip
 - Install required dependencies with ```python -m pip install requirements.txt```
 
